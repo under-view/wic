@@ -31,15 +31,26 @@ Contributing
 Please refer to our contributor guide here: <https://docs.yoctoproject.org/dev/contributor-guide/>
 for full details on how to submit changes.
 
-As a quick guide, patches should be sent to <TBD>
-The git command to do that would be:
+As a quick guide, patches should be sent to <yocto-patches@lists.yoctoproject.org>,
+please include [wic] in the patch subject line, and please CC the
+maintainer(s).
+
+One possible git command to send the most recent commit could be:
 
 ```
-git send-email -M -1 --to <TBD>
+git send-email --subject-prefix="wic][PATCH" -M -1 --to 'yocto-patches@lists.yoctoproject.org' --cc 'twoerner@gmail.com'
 ```
 
-Mailing list:
-<TBD>
+Questions, comments, etc
+------------------------
 
-Source code:
+The best place to send questions, comments, etc would be the yocto-patches
+mailing list. Another good place would be the general yocto mailing list.
+Also the #yocto or #oe channels of the project's IRC would work too.
+
+See: <https://www.yoctoproject.org/community/mailing-lists/>
+
+Source code
+-----------
+
 <https://git.yoctoproject.org/wic/>

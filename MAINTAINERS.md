@@ -1,4 +1,4 @@
 OpenEmbedded Image Creator Maintainer Information
 =================================================
 
-TBD
+* Trevor Woerner <twoerner@gmail.com>
