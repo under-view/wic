@@ -54,7 +54,7 @@ class Disk:
         self._ptable_format = None
 
         # define sector size
-        self.sector_size = None
+        self.sector_size = 4096
 
         # find parted
         # read paths from $PATH environment variable
@@ -84,6 +84,7 @@ class Disk:
             self._partitions = OrderedDict()
 
             if self.sector_size is not None:
+                print("sector size: {}".format(self.sector_size))
                 out = exec_cmd("export PARTED_SECTOR_SIZE=%d; %s -sm %s unit B print" % \
                            (self.sector_size, self.parted, self.imagepath), True)
             else:
