@@ -43,7 +43,7 @@ def verify_build_env():
 
 
 class Disk:
-    def __init__(self, imagepath, native_sysroot, fstypes=('fat', 'ext')):
+    def __init__(self, imagepath, sector_size, native_sysroot, fstypes=('fat', 'ext')):
         self.imagepath = imagepath
         self.native_sysroot = native_sysroot
         self.fstypes = fstypes
@@ -54,7 +54,7 @@ class Disk:
         self._ptable_format = None
 
         # define sector size
-        self.sector_size = None
+        self.sector_size = sector_size
 
         # find parted
         # read paths from $PATH environment variable
@@ -386,7 +386,7 @@ class Disk:
 
 def wic_ls(args, native_sysroot):
     """List contents of partitioned image or vfat partition."""
-    disk = Disk(args.path.image, native_sysroot)
+    disk = Disk(args.path.image, args.sector_size, native_sysroot)
     if not args.path.part:
         if disk.partitions:
             print('Num     Start        End          Size      Fstype')
@@ -404,9 +404,9 @@ def wic_cp(args, native_sysroot):
     partitioned image.
     """
     if isinstance(args.dest, str):
-        disk = Disk(args.src.image, native_sysroot)
+        disk = Disk(args.src.image, args.sector_size, native_sysroot)
     else:
-        disk = Disk(args.dest.image, native_sysroot)
+        disk = Disk(args.dest.image, args.sector_size, native_sysroot)
     disk.copy(args.src, args.dest)
 
 
@@ -415,7 +415,7 @@ def wic_rm(args, native_sysroot):
     Remove files or directories from the vfat partition of
     partitioned image.
     """
-    disk = Disk(args.path.image, native_sysroot)
+    disk = Disk(args.path.image, args.sector_size, native_sysroot)
     disk.remove(args.path.part, args.path.path, args.recursive_delete)
 
 def wic_write(args, native_sysroot):

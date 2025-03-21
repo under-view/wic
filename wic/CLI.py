@@ -163,6 +163,8 @@ def wic_init_parser_ls(subparser):
                         help="image spec: <image>[:<vfat partition>[<path>]]")
     subparser.add_argument("-n", "--native-sysroot",
                         help="path to the native sysroot containing the tools")
+    subparser.add_argument("--sector-size", type=int, dest="sector_size",
+                        default=512, help="sector size to use")
 
 
 def imgpathtype(arg):
@@ -179,6 +181,8 @@ def wic_init_parser_cp(subparser):
                         help="image spec: <image>:<vfat partition>[<path>] or <file>")
     subparser.add_argument("-n", "--native-sysroot",
                         help="path to the native sysroot containing the tools")
+    subparser.add_argument("--sector-size", type=int, dest="sector_size",
+                        default=512, help="sector size to use")
 
 
 def wic_init_parser_rm(subparser):
@@ -189,6 +193,8 @@ def wic_init_parser_rm(subparser):
     subparser.add_argument("-r", dest="recursive_delete", action="store_true", default=False,
                         help="remove directories and their contents recursively, "
                         " this only applies to ext* partition")
+    subparser.add_argument("--sector-size", type=int, dest="sector_size",
+                        default=512, help="sector size to use")
 
 
 def expandtype(rules):
