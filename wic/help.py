@@ -90,7 +90,7 @@ wic_ls_usage = """
 
  List content of a partitioned image
 
- usage: wic ls <image>[:<partition>[<path>]] [--native-sysroot <path>]
+ usage: wic ls <image>[:<partition>[<path>]] [--native-sysroot <path>] [--sector-size <N>]
 
  This command  outputs either list of image partitions or directory contents
  of vfat and ext* partitions.
@@ -149,13 +149,16 @@ DESCRIPTION
     The -n option is used to specify the path to the native sysroot
     containing the tools(parted and mtools) to use.
 
+    The --sector-size <N> option is used if the wic file being
+    manipulated has a sector size that differs from the default
+    512 bytes.
 """
 
 wic_cp_usage = """
 
  Copy files and directories to/from the vfat or ext* partition
 
- usage: wic cp <src> <dest> [--native-sysroot <path>]
+ usage: wic cp <src> <dest> [--native-sysroot <path>] [--sector-size <N>]
 
  source/destination image in format <image>:<partition>[<path>]
 
@@ -220,13 +223,17 @@ DESCRIPTION
 
     The -n option is used to specify the path to the native sysroot
     containing the tools(parted and mtools) to use.
+
+    The --sector-size <N> option is used if the wic file being
+    manipulated has a sector size that differs from the default
+    512 bytes.
 """
 
 wic_rm_usage = """
 
  Remove files or directories from the vfat or ext* partitions
 
- usage: wic rm <image>:<partition><path> [--native-sysroot <path>]
+ usage: wic rm <image>:<partition><path> [--native-sysroot <path>] [--sector-size <N>]
 
  This command  removes files or directories from the vfat or ext* partitions of
  the partitioned image.
@@ -281,6 +288,10 @@ DESCRIPTION
 
     The -r option is used to remove directories and their contents
     recursively,this only applies to ext* partition.
+
+    The --sector-size <N> option is used if the wic file being
+    manipulated has a sector size that differs from the default
+    512 bytes.
 """
 
 wic_write_usage = """
@@ -352,6 +363,12 @@ COMMAND:
     write  -   Write an image to a device
     cp     -   Copy files and directories to the vfat or ext* partitions
 
+
+Global options:
+    --sector-size <N>    the 'ls', 'rm', and 'cp' commands take an
+                         optional sector-size parameter if the wic file
+                         being manipulated uses a sector-size that differs
+                         from the default sector size of 512 bytes.
 
 Examples:
 
