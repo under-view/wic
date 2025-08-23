@@ -101,7 +101,7 @@ class BootimgPcbiosPlugin(SourcePlugin):
                      disk_name, full_path, disk.min_size)
 
         if cls.loader == 'grub':
-            cls._do_install_grub(creator, kernel_dir,
+            cls._do_install_grub(disk, creator, kernel_dir,
                             native_sysroot, full_path)
         elif cls.loader == 'syslinux':
             cls._do_install_syslinux(creator, bootimg_dir,
@@ -347,6 +347,12 @@ class BootimgPcbiosPlugin(SourcePlugin):
 
     @classmethod
     def _do_configure_grub(cls, part, creator, cr_workdir):
+        # If partition type is either EFI System or
+        # BIOS boot no need to generate/copy grub config.
+        if part.part_type == '21686148-6449-6E6F-744E-656564454649' or \
+           part.part_type == 'C12A7328-F81F-11D2-BA4B-00A0C93EC93B':
+            return 0
+
         hdddir = "%s/hdd" % cr_workdir
         bootloader = creator.ks.bootloader
 
@@ -445,6 +451,12 @@ class BootimgPcbiosPlugin(SourcePlugin):
          grub_mods_path, core_img, builtin_modules)
         exec_native_cmd(grub_mkimage, native_sysroot)
 
+        # If partition type is either EFI System or
+        # BIOS boot no need to copy in grub modules.
+        if part.part_type == '21686148-6449-6E6F-744E-656564454649' or \
+           part.part_type == 'C12A7328-F81F-11D2-BA4B-00A0C93EC93B':
+            return 0
+
         # Copy grub modules
         install_dir = '%s/%s/%s' % (hdddir, grub_prefix_path, grub_format)
         os.makedirs(install_dir, exist_ok=True)
@@ -461,7 +473,7 @@ class BootimgPcbiosPlugin(SourcePlugin):
                             native_sysroot, False)
 
     @classmethod
-    def _do_install_grub(cls, creator, kernel_dir,
+    def _do_install_grub(cls, disk, creator, kernel_dir,
                          native_sysroot, full_path):
         core_img = '%s/grub-bios-core.img' % (kernel_dir)
 
@@ -485,6 +497,45 @@ class BootimgPcbiosPlugin(SourcePlugin):
             # Install core.img or grub stage 1.5
             dd_cmd = "dd if=%s of=%s conv=notrunc bs=1 seek=512" % (core_img, full_path)
             exec_cmd(dd_cmd, native_sysroot)
+        elif creator.ptable_format == 'gpt':
+            # Issue GPT headers reside where core.img should be (at byte 512).
+            # To navigate around issue core.img was moved to a seperate partition.
+            #
+            # If disk is a GPT disk caller must specify the file system
+            # type as none. As no filesystem may be created. Caller must
+            # also set the partition type to BIOS boot. So, the plugin
+            # may embed core.img there.
+
+            # Replicates what grub-install does to boot.img
+            # Found by comparing xxd output of generated boot.img
+            # to boot.img after grub-install.
+            dd_cmd = "echo -ne '\\x00\\x08' | dd of=%s conv=notrunc bs=1 count=2 seek=92" % (full_path)
+            exec_native_cmd(dd_cmd, native_sysroot)
+
+            dd_cmd = "echo -ne '\\x90\\x90' | dd of=%s conv=notrunc bs=1 count=2 seek=102" % (full_path)
+            exec_native_cmd(dd_cmd, native_sysroot)
+
+            for part in creator.parts:
+                if part.part_type == '21686148-6449-6E6F-744E-656564454649':
+                    part_start_byte = part.start * disk.sector_size
+
+                    # Install core.img or grub stage 1.5
+                    dd_cmd = "dd if=%s of=%s conv=notrunc bs=1 seek=%s" % \
+                        (core_img, full_path, part_start_byte)
+                    exec_cmd(dd_cmd, native_sysroot)
+
+                    # Replicates what grub-install does to core.img
+                    # Found by comparing xxd output of generated
+                    # core.img to core.img ater grub install.
+                    dd_cmd = "echo -ne '\\x01\\x08' | dd of=%s conv=notrunc bs=1 count=2 seek=%d" % \
+                            (full_path, part_start_byte + 500)
+                    exec_native_cmd(dd_cmd, native_sysroot)
+
+                    dd_cmd = "echo -ne '\\x2f\\x02' | dd of=%s conv=notrunc bs=1 count=2 seek=%d" % \
+                            (full_path, part_start_byte + 508)
+                    exec_native_cmd(dd_cmd, native_sysroot)
+
+                    break
         else:
             raise WicError("Unsupported partition table: %s" %
                            creator.ptable_format)
