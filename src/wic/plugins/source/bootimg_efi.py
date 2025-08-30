@@ -224,7 +224,13 @@ class BootimgEFIPlugin(SourcePlugin):
         exec_cmd(install_cmd)
 
         try:
-            if source_params['loader'] == 'grub-efi':
+            # In grub hybrid boot case bootimg_pcbios generates/copies the grub.cfg
+            # that will be stored on same partitions as the grub modules.
+            if 'loader-bios' in source_params and \
+               source_params['loader-bios'] == 'grub' and \
+               source_params['loader'] == 'grub-efi':
+                pass
+            elif source_params['loader'] == 'grub-efi':
                 cls.do_configure_grubefi(hdddir, creator, cr_workdir, source_params)
             elif source_params['loader'] == 'systemd-boot':
                 cls.do_configure_systemdboot(hdddir, creator, cr_workdir, source_params)
@@ -329,7 +335,25 @@ class BootimgEFIPlugin(SourcePlugin):
                 logger.debug("Installed IMAGE_EFI_BOOT_FILES:\n%s" % out)
 
         try:
-            if source_params['loader'] == 'grub-efi':
+            if 'loader-bios' in source_params and \
+               source_params['loader-bios'] == 'grub' and \
+               source_params['loader'] == 'grub-efi':
+
+                # If partition type is Bios Boot return
+                if part.part_type == '21686148-6449-6E6F-744E-656564454649':
+                       return 0
+
+                # The grub config in the hybrid grub boot setup is
+                # copied by the bootimg_pcbios wics plugin.
+                if part.part_type == 'C12A7328-F81F-11D2-BA4B-00A0C93EC93B':
+                    for mod in [x for x in os.listdir(kernel_dir) if x.startswith("grub-efi-")]:
+                        cp_cmd = "cp -v -p %s/%s %s/EFI/BOOT/%s" % \
+                            (kernel_dir, mod, hdddir, mod[9:])
+                        exec_cmd(cp_cmd, True)
+                else:
+                    shutil.rmtree("%s/EFI" % hdddir)
+                    return 0
+            elif source_params['loader'] == 'grub-efi':
                 shutil.copyfile("%s/hdd/boot/EFI/BOOT/grub.cfg" % cr_workdir,
                                 "%s/grub.cfg" % cr_workdir)
                 for mod in [x for x in os.listdir(kernel_dir) if x.startswith("grub-efi-")]:
