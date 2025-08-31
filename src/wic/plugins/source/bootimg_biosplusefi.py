@@ -28,7 +28,7 @@ class BootimgBiosPlusEFIPlugin(SourcePlugin):
     """
     Create MBR + EFI boot partition
 
-    This plugin creates a boot partition that contains both
+    This plugin creates a boot partition(s) that contains both
     legacy BIOS and EFI content. It will be able to boot from both.
     This is useful when managing PC fleet with some older machines
     without EFI support.
@@ -51,7 +51,9 @@ class BootimgBiosPlusEFIPlugin(SourcePlugin):
     not turn the rootfs into an initramfs RAM image.
 
     This plugin is made to put everything into a single /boot partition so it
-    does not have the limitations listed above.
+    does not have the limitations listed above. Unless GRUB is the primary
+    bootloader. We have to seperate it into multiple partitions because
+    of core.img.
 
     The plugin is made so it does tries not to reimplement what's already
     been done in other plugins; as such it imports "bootimg_pcbios"
@@ -71,9 +73,33 @@ class BootimgBiosPlusEFIPlugin(SourcePlugin):
     Plugin options, such as "--sourceparams" can still be passed to a
     plugin, as long they does not cause issue in the other plugin.
 
-    Example wic configuration:
+    Example wic configurations:
+
+    ************ Example kickstart GRUB/Syslinux Hybrid Legacy Bios Or Newer UEFI Boot ************
     part /boot --source bootimg_biosplusefi --sourceparams="loader=grub-efi"\\
                --ondisk sda --label os_boot --active --align 1024 --use-uuid
+    ************ Example kickstart GRUB/Syslinux Hybrid Legacy Bios Or Newer UEFI Boot ************
+
+
+    ********************** Example kickstart GRUB Hybrid Legacy Bios Or Newer UEFI Boot **********************
+    # See https://wiki.archlinux.org/title/GPT_fdisk#Partition_type
+
+    part bios_boot --label bios_boot --fstype none --offset 1024 --fixed-size 1M \\
+                   --part-type 21686148-6449-6E6F-744E-656564454649 --source bootimg_biosplusefi \\
+                   --sourceparams="loader=grub-efi,loader-bios=grub,install-kernel-into-boot-dir=false"
+
+    part efi_system --label efi_system --fstype vfat --fixed-size 48M \\
+                    --part-type C12A7328-F81F-11D2-BA4B-00A0C93EC93B --source bootimg_biosplusefi \\
+                    --sourceparams="loader=grub-efi,loader-bios=grub,install-kernel-into-boot-dir=false"
+
+    part grub_data --label grub_data --fstype ext4 --fixed-size 78M \\
+                   --part-type 0FC63DAF-8483-4772-8E79-3D69D8477DE4 --source bootimg_biosplusefi \\
+                   --sourceparams="loader=grub-efi,loader-bios=grub,install-kernel-into-boot-dir=false"
+
+    part roots --label rootfs --fstype ext4 --source rootfs --part-type 0FC63DAF-8483-4772-8E79-3D69D8477DE4
+
+    bootloader --ptable gpt --source bootimg_biosplusefi
+    ********************** Example kickstart GRUB Hybrid Legacy Bios Or Newer UEFI Boot **********************
     """
 
     name = 'bootimg_biosplusefi'
