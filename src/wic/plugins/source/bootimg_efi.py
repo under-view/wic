@@ -351,7 +351,39 @@ class BootimgEFIPlugin(SourcePlugin):
                             (kernel_dir, mod, hdddir, mod[9:])
                         exec_cmd(cp_cmd, True)
                 else:
+                    # Assumming all grub modules weren't embedded
+                    # into grub.efi or core.img copy them now.
+                    copy_types = [ '*.mod', '*.o', '*.lst' ]
+
+                    # It appears the EFI directory resides after
+                    # initial population of the EFI System partition
+                    # in the if statement above. Remove so that the
+                    # partition doesn't contain any unrequired files.
                     shutil.rmtree("%s/EFI" % hdddir)
+
+                    hdddir = "%s/hdd" % cr_workdir
+
+                    staging_libdir = cls._get_staging_libdir()
+
+                    grub_format = get_bitbake_var('GRUB_MKIMAGE_FORMAT_EFI')
+                    if not grub_format:
+                        grub_format = 'x86_64-efi'
+
+                    grub_prefix_path = get_bitbake_var('GRUB_PREFIX_PATH')
+                    if not grub_prefix_path:
+                        grub_prefix_path = '/boot/grub'
+
+                    # Copy grub modules
+                    install_dir = '%s/%s/%s' % (hdddir, grub_prefix_path, grub_format)
+                    os.makedirs(install_dir, exist_ok=True)
+
+                    for ctype in copy_types:
+                        files = glob('%s/grub/%s/%s' % \
+                            (staging_libdir, grub_format, ctype))
+                        for file in files:
+                            shutil.copy2(file, install_dir, follow_symlinks=True)
+
+                    # bootimg_pcbios calles prepare_rootfs no need to here.
                     return 0
             elif source_params['loader'] == 'grub-efi':
                 shutil.copyfile("%s/hdd/boot/EFI/BOOT/grub.cfg" % cr_workdir,
@@ -459,3 +491,24 @@ class BootimgEFIPlugin(SourcePlugin):
 
         part.size = int(bootimg_size)
         part.source_file = bootimg
+
+    @classmethod
+    def _get_staging_libdir(cls):
+        """
+        For unknown reasons when running test with poky
+        STAGING_LIBDIR gets unset when wic create is executed.
+        Bellow is a hack to determine what STAGING_LIBDIR should
+        be if not specified.
+        """
+
+        staging_libdir = get_bitbake_var('STAGING_LIBDIR')
+        staging_dir_target = get_bitbake_var('STAGING_DIR_TARGET')
+
+        if not staging_libdir:
+            staging_libdir = '%s/usr/lib64' % staging_dir_target
+            if not os.path.isdir(staging_libdir):
+                staging_libdir = '%s/usr/lib32' % staging_dir_target
+                if not os.path.isdir(staging_libdir):
+                    staging_libdir = '%s/usr/lib' % staging_dir_target
+
+        return staging_libdir
