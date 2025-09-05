@@ -208,7 +208,7 @@ class BootimgPcbiosPlugin(SourcePlugin):
             # 'None' being the value placed within the configuration
             # file.
             if not bootloader.timeout:
-                bootloader.timeout = 500
+                bootloader.timeout = 0
 
             # Set a default kernel params string if none specified
             # to avoid 'None' being the value placed within the
@@ -371,7 +371,7 @@ class BootimgPcbiosPlugin(SourcePlugin):
             # 'None' being the value placed within the configuration
             # file.
             if not bootloader.timeout:
-                bootloader.timeout = 500
+                bootloader.timeout = 0
 
             # Set a default kernel params string if none specified
             # to avoid 'None' being the value placed within the
