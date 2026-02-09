@@ -1,0 +1,38 @@
+[project]
+name = "wic"
+description = "OpenEmbedded Image Creator (wic) packaged as a standalone CLI"
+dynamic = ["version"]
+readme = "README.md"
+license = { text = "GPL-2.0-only" }
+maintainers = [
+    { name = "Trevor Woerner", email = "twoerner@gmail.com" },
+]
+requires-python = ">=3.8"
+classifiers = [
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Build Tools",
+  "Topic :: Software Development :: Embedded Systems",
+  "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+]
+
+[project.urls]
+Homepage = "https://git.yoctoproject.org/wic"
+Repository = "https://git.yoctoproject.org/wic"
+
+[project.scripts]
+wic = "wic.cli:main"
+
+[tool.hatch.build]
+packages = ["src/wic"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/wic"]
+
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "src/wic/cli.py"
