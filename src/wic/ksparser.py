@@ -101,6 +101,15 @@ def overheadtype(arg):
 
     return result
 
+def resolve_canned_path(arg, current_confpath=None):
+    if current_confpath:
+        current_dir = os.path.dirname(os.path.abspath(current_confpath))
+        relative_path = os.path.join(current_dir, arg)
+        if os.path.exists(relative_path):
+            return relative_path
+
+    return None
+
 def cannedpathtype(arg):
     """
     Custom type for ArgumentParser
@@ -202,7 +211,7 @@ class KickStart():
         bootloader.add_argument('--source')
 
         include = subparsers.add_parser('include')
-        include.add_argument('path', type=cannedpathtype)
+        include.add_argument('path')
 
         self._parse(parser, confpath)
         if not self.bootloader:
@@ -289,7 +298,12 @@ class KickStart():
                         self.partnum += 1
                         self.partitions.append(Partition(parsed, self.partnum))
                     elif line.startswith('include'):
-                        self._parse(parser, parsed.path)
+                        include_path = resolve_canned_path(parsed.path, confpath)
+                        if not include_path:
+                            err = "%s:%d: argument path: file not found: %s" % \
+                                  (confpath, lineno, parsed.path)
+                            raise KickStartError(err)
+                        self._parse(parser, include_path)
                     elif line.startswith('bootloader'):
                         if not self.bootloader:
                             self.bootloader = parsed
