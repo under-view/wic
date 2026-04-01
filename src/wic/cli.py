@@ -590,7 +590,10 @@ class WicArgumentParser(argparse.ArgumentParser):
      def format_help(self):
          return hlp.wic_help
 
-def main(argv):
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]
+
     parser = WicArgumentParser(
         description="wic version %s" % __version__)
 
