@@ -28,10 +28,6 @@ from collections import namedtuple
 
 # External modules
 scripts_path = os.path.dirname(os.path.realpath(__file__))
-lib_path = scripts_path + '/lib'
-sys.path.insert(0, lib_path)
-import scriptpath
-scriptpath.add_oe_lib_path()
 
 # Check whether wic is running within eSDK environment
 sdkroot = scripts_path
@@ -48,9 +44,6 @@ if os.environ.get('SDKTARGETSYSROOT'):
         sdkroot = os.path.dirname(sdkroot)
 
 bitbake_exe = shutil.which('bitbake')
-if bitbake_exe:
-    bitbake_path = scriptpath.add_bitbake_lib_path()
-    import bb
 
 from wic import WicError
 from wic.misc import get_bitbake_var, BB_VARS
