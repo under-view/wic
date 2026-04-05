@@ -43,24 +43,14 @@ def verify_build_env():
     return True
 
 
-CANNED_IMAGE_DIR = "lib/wic/canned-wks" # relative to scripts
-SCRIPTS_CANNED_IMAGE_DIR = "scripts/" + CANNED_IMAGE_DIR
-WIC_DIR = "wic"
-WIC_FILES_DIR = "files/wic"
-
 def build_canned_image_list(path):
-    layers_path = get_bitbake_var("BBLAYERS")
+    bbpath = (get_bitbake_var("BBPATH") or "").split(":")
     canned_wks_layer_dirs = []
 
-    if layers_path is not None:
-        for layer_path in layers_path.split():
-            for wks_path in (WIC_FILES_DIR, WIC_DIR, SCRIPTS_CANNED_IMAGE_DIR):
-                cpath = os.path.join(layer_path, wks_path)
-                if os.path.isdir(cpath):
-                    canned_wks_layer_dirs.append(cpath)
-
-    cpath = os.path.join(path, CANNED_IMAGE_DIR)
-    canned_wks_layer_dirs.append(cpath)
+    for layer_path in bbpath:
+        cpath = os.path.join(layer_path, 'files', 'wic')
+        if os.path.isdir(cpath):
+            canned_wks_layer_dirs.append(cpath)
 
     return canned_wks_layer_dirs
 
