@@ -1,13 +1,13 @@
 # WIC Standalone
 
 This packages the OpenEmbedded Image Creator (`wic`) as an installable
-Python CLI using Hatch. It either consumes BitBake-exported environment
-files (generated via `bitbake -c rootfs_wicenv <image>`) or will invoke
-BitBake directly (if available on the PATH).
+Python CLI using Hatch. It either consumes a BitBake-exported
+environment file or folder (generated via `bitbake -c rootfs_wicenv
+<image>`) or will invoke BitBake directly (if available on the PATH).
 
 ## Quick start
 
-### Using wicenv
+### Using wicenv (one environment file)
 1. Ensure you have a BitBake-generated `<image>.env` file (from `rootfs_wicenv`).
 2. Install locally for development:
    ```bash
@@ -16,6 +16,17 @@ BitBake directly (if available on the PATH).
 3. Run the CLI:
    ```bash
    hatch run wic --vars /path/to/<image>.env --help
+   ```
+
+### Using wicenv (environment folder)
+1. Ensure you have a folder with BitBake-generated `<image>.env` files (from `rootfs_wicenv`).
+2. Install locally for development:
+   ```bash
+   hatch shell
+   ```
+3. Run the CLI:
+   ```bash
+   hatch run wic --vars /path/to/envfiledir --help
    ```
 
 ### With bitbake
