@@ -1,0 +1,4 @@
+[b4]
+  send-series-to = yocto-patches@lists.yoctoproject.org
+  send-series-cc = twoerner@gmail.com
+  send-prefixes = wic
