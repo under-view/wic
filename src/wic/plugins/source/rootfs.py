@@ -16,12 +16,12 @@ import os
 import shutil
 import sys
 
-from oe.path import copyhardlinktree
 from pathlib import Path
 
 from wic import WicError
 from wic.pluginbase import SourcePlugin
 from wic.misc import get_bitbake_var, exec_native_cmd
+from wic.oe.path import copyhardlinktree
 
 logger = logging.getLogger('wic')
 
