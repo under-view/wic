@@ -231,8 +231,14 @@ class BootimgPcbiosPlugin(SourcePlugin):
             kernel = "/" + get_bitbake_var("KERNEL_IMAGETYPE")
             syslinux_conf += "KERNEL " + kernel + "\n"
 
-            syslinux_conf += "APPEND label=boot root=%s %s\n" % \
-                             (creator.rootdev, bootloader.append)
+            # Check if rootdev exists
+            parts = ["label=boot"]
+            if creator.rootdev:
+                parts.append("root=%s" % creator.rootdev)
+            if bootloader.append:
+                parts.append(bootloader.append)
+
+            syslinux_conf += "APPEND %s\n" % " ".join(parts)
 
         logger.debug("Writing syslinux config %s/syslinux.cfg", hdddir)
         cfg = open("%s/hdd/boot/syslinux.cfg" % cr_workdir, "w")

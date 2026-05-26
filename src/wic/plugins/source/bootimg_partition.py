@@ -118,8 +118,15 @@ class BootimgPartitionPlugin(SourcePlugin):
             if has_dtb:
                 extlinux_conf += "   fdtdir %s\n" % fdt_dir
             bootloader = cr.ks.bootloader
-            extlinux_conf += "append root=%s rootwait %s\n" \
-                             % (cr.rootdev, bootloader.append if bootloader.append else '')
+
+            # Check if rootdev exists
+            parts = ["rootwait"]
+            if cr.rootdev:
+                parts.insert(0, "root=%s" % cr.rootdev)
+            if bootloader.append:
+                parts.append(bootloader.append)
+
+            extlinux_conf += "append %s\n" % " ".join(parts)
 
         install_cmd = "install -d %s/extlinux/" % hdddir
         exec_cmd(install_cmd)
