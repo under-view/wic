@@ -57,6 +57,13 @@ When sending patches, please make sure the email subject line includes
 "[wic][PATCH]" and follow The Yocto Project community's patch submission
 guidelines.
 
+When generating the patches manually, this will generate what's expected:
+
+   git send-email -M -1 --to yocto-patches@lists.yoctoproject.org --subject-prefix='wic][PATCH'
+
+Nothing, except running `b4 send` to actually send the patches, needs to be done
+when using [b4](https://b4.docs.kernel.org/).
+
 ## Licensing
 
 GPL-2.0-only to match the original OpenEmbedded wic tooling.
