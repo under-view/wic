@@ -57,9 +57,13 @@ When sending patches, please make sure the email subject line includes
 "[wic][PATCH]" and follow The Yocto Project community's patch submission
 guidelines.
 
+The patches should be sent with the mailing list (yocto-patches@lists.yoctoproject.org)
+in the To: recipients and the maintainer address (twoerner@gmail.com) in Cc:
+recipients.
+
 When generating the patches manually, this will generate what's expected:
 
-   git send-email -M -1 --to yocto-patches@lists.yoctoproject.org --subject-prefix='wic][PATCH'
+   git send-email -M -1 --to yocto-patches@lists.yoctoproject.org --cc twoerner@gmail.com --subject-prefix='wic][PATCH'
 
 Nothing, except running `b4 send` to actually send the patches, needs to be done
 when using [b4](https://b4.docs.kernel.org/).
