@@ -10,33 +10,33 @@ environment file or folder (generated via `bitbake -c rootfs_wicenv
 ### Using wicenv (one environment file)
 1. Ensure you have a BitBake-generated `<image>.env` file (from `rootfs_wicenv`).
 2. Install locally for development:
-   ```bash
+   ```
    hatch shell
    ```
 3. Run the CLI:
-   ```bash
+   ```
    hatch run wic --vars /path/to/<image>.env --help
    ```
 
 ### Using wicenv (environment folder)
 1. Ensure you have a folder with BitBake-generated `<image>.env` files (from `rootfs_wicenv`).
 2. Install locally for development:
-   ```bash
+   ```
    hatch shell
    ```
 3. Run the CLI:
-   ```bash
+   ```
    hatch run wic --vars /path/to/envfiledir --help
    ```
 
 ### With bitbake
 1. Ensure you have bitbake available in your PATH.
 2. Install locally for development:
-   ```bash
+   ```
    hatch shell
    ```
 3. Run the CLI:
-   ```bash
+   ```
    hatch run wic --help
    ```
 
@@ -63,7 +63,9 @@ recipients.
 
 When generating the patches manually, this will generate what's expected:
 
-   git send-email -M -1 --to yocto-patches@lists.yoctoproject.org --cc twoerner@gmail.com --subject-prefix='wic][PATCH'
+```
+git send-email -M -1 --to yocto-patches@lists.yoctoproject.org --cc twoerner@gmail.com --subject-prefix='wic][PATCH'
+```
 
 Nothing, except running `b4 send` to actually send the patches, needs to be done
 when using [b4](https://b4.docs.kernel.org/).
