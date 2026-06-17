@@ -26,7 +26,7 @@ logger = logging.getLogger('wic')
 
 class BootimgPcbiosPlugin(SourcePlugin):
     """
-    Creates boot partition that is legacy BIOS firmare bootable with
+    Creates boot partition that is legacy BIOS firmware bootable with
     MBR/MSDOS as partition table format. Plugin will install caller
     selected bootloader directly to resulting wic image.
 
