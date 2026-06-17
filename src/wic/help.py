@@ -817,7 +817,7 @@ DESCRIPTION
       # long-description: Creates a partitioned EFI disk image that the user
       # can directly dd to boot media.
 
-      part /boot --source bootimg-efi --ondisk sda --fstype=efi --active
+      part /boot --source bootimg_efi --ondisk sda --fstype=efi --active
 
       part / --source rootfs --ondisk sda --fstype=ext3 --label platform
 
