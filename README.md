@@ -47,6 +47,21 @@ environment file or folder (generated via `bitbake -c rootfs_wicenv
 - `src/bb/*`: various bitbake helpers that were brought along and used in other parts of wic.
 - `src/oe/*`: various oe-core helpers that were brought along and used in other parts of wic.
 
+## Testing
+
+wic's test suite lives under `tests/` and runs from a plain checkout
+with nothing but `pytest`; it needs no BitBake and no OpenEmbedded
+build. Install the test extras and run it:
+
+```
+pip install -e ".[tests]"
+just tests
+```
+
+The test extras include [just](https://just.systems/), the command
+runner used to drive the suite; run `just` on its own to list the
+available recipes.
+
 ## Contributing
 
 Please send all patches, comments, or questions to the yocto-patches

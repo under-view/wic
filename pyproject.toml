@@ -21,6 +21,12 @@ classifiers = [
 Homepage = "https://git.yoctoproject.org/wic"
 Repository = "https://git.yoctoproject.org/wic"
 
+[project.optional-dependencies]
+tests = [
+    "pytest >= 9.1.1",
+    "rust-just >= 1.55.1",
+]
+
 [project.scripts]
 wic = "wic.cli:main"
 
@@ -36,3 +42,11 @@ build-backend = "hatchling.build"
 
 [tool.hatch.version]
 path = "src/wic/cli.py"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Keep a test's scratch directory only when that test fails, and keep
+# just the most recent failing session, so repeated runs do not pile up
+# leftover directories under the pytest base temp directory.
+tmp_path_retention_policy = "failed"
+tmp_path_retention_count  = 1
