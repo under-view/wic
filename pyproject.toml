@@ -26,6 +26,7 @@ tests = [
     "pytest >= 9.1.1",
     "coverage >= 7.15.0",
     "pytest-cov >= 7.1.0",
+    "ruff == 0.15.20",
     "rust-just >= 1.55.1",
 ]
 
@@ -52,3 +53,10 @@ testpaths = ["tests"]
 # leftover directories under the pytest base temp directory.
 tmp_path_retention_policy = "failed"
 tmp_path_retention_count  = 1
+
+[tool.ruff.lint.per-file-ignores]
+# Test modules prepend the in-tree src/ directory to sys.path before
+# importing wic, so the suite runs against a checkout that has not been
+# installed. That bootstrap runs before the wic imports, which trips
+# E402; the ordering is deliberate, so ignore E402 for the test tree.
+"tests/**" = ["E402"]
