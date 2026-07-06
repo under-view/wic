@@ -1,6 +1,7 @@
 """
 Minimal subset of BitBake's bb.utils used by standalone wic.
 """
+import errno
 import os
 
 # from bitbake/lib/bb/utils.py
